@@ -1,0 +1,8 @@
+#Ignored folders
+
+Library/*
+Logs/*
+.vs/*
+obj/*
+
+#Ignored files
