@@ -11,9 +11,14 @@ public class SaveManager : Singleton<SaveManager>
         return true;
     }
 
-    public bool SaveBoard(Cell[,] cells, float time)
+    public BoardSave GetBoardSave()
+    { 
+        return IOFile.ReadCacheJson<BoardSave>(SAVE_FILE);
+    }
+
+    public bool SaveBoard(Cell[,] cells, float time, int score)
     {
-        BoardSave save = new BoardSave(cells, time);
+        BoardSave save = new BoardSave(cells, score, time);
         IOFile.WriteCacheJson<BoardSave>(save, SAVE_FILE);
         return false;
     }

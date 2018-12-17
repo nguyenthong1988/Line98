@@ -7,9 +7,10 @@ using Newtonsoft.Json.Converters;
 public class BoardSave
 {
     public BoardSave() { }
-    public BoardSave(Cell[,] cells, float duration = 0, int hardmode = 0)
+    public BoardSave(Cell[,] cells, int score = 0 ,float duration = 0, int hardmode = 0)
     {
         if (cells.Length == 0) return;
+        Score = score;
         HardMode = hardmode;
         Duration = duration;
 

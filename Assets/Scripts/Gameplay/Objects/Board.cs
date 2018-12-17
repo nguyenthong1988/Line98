@@ -425,7 +425,7 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         switch(eventType.Command)
         {
             case GamePlay.GameCommand.SaveBoard:
-                SaveManager.Instance.SaveBoard(mCells, GameManager.Instance.PlayedTime);
+                SaveManager.Instance.SaveBoard(mCells, GameManager.Instance.PlayedTime, GameManager.Instance.GameScore);
                 break;
             case GamePlay.GameCommand.LoadBoard:
                 CleanBoard();

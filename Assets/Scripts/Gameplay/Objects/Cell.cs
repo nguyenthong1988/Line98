@@ -87,7 +87,7 @@ public class Cell : ObjectBound
     { 
         get
         {
-            return !Ball;
+            return !Ball || Ball.BallSize <= Ball.Size.Dot;
         }
     }
 }

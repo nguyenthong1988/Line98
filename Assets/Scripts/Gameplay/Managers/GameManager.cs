@@ -10,7 +10,7 @@ public class GamePlay
     public enum GameScore { Add, Set }
 }
 
-public class GameManager : Singleton<GameManager>, IEvent<GameScoreEvent>
+public class GameManager : Singleton<GameManager>, IEvent<GameScoreEvent>, IEvent<GameCommandEvent>
 {
     public GamePlay.GameState GameState = GamePlay.GameState.None;
     public GamePlay.HardMode HardMode = GamePlay.HardMode.Easy;
@@ -42,11 +42,13 @@ public class GameManager : Singleton<GameManager>, IEvent<GameScoreEvent>
     protected virtual void OnEnable()
     {
         GameEvent.AddListener<GameScoreEvent>(this);
+        GameEvent.AddListener<GameCommandEvent>(this);
     }
 
     protected virtual void OnDisable()
     {
         GameEvent.RemoveListener<GameScoreEvent>(this);
+        GameEvent.RemoveListener<GameCommandEvent>(this);
     }
 
     public int NumOfKindBall
@@ -73,6 +75,33 @@ public class GameManager : Singleton<GameManager>, IEvent<GameScoreEvent>
         }
         Player.SetHighScore(GameScore);
         HUDManager.Instance.UpdateScore();
+    }
+
+    public void OnEvent(GameCommandEvent eventType)
+    {
+        switch (eventType.Command)
+        {
+            case GamePlay.GameCommand.SaveBoard:
+                break;
+            case GamePlay.GameCommand.LoadBoard:
+                BoardSave boardSave = SaveManager.Instance.GetBoardSave();
+                if(boardSave != null)
+                {
+                    GameScore = boardSave.Score;
+                    PlayedTime = boardSave.Duration;
+                    HUDManager.Instance.UpdateScore();
+                    HUDManager.Instance.UpdatePlayedTime();
+                }
+                break;
+            case GamePlay.GameCommand.ResetBoard:
+                GameScore = 0;
+                PlayedTime = 0;
+                HUDManager.Instance.UpdateScore();
+                HUDManager.Instance.UpdatePlayedTime();
+                break;
+            default:
+                break;
+        }
     }
 }
 
