@@ -79,10 +79,12 @@
     <Compile Include="Assets\Scripts\Pooler.cs" />
     <Compile Include="Assets\Scripts\UI\Objects\BallImage.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\BallPanel.cs" />
-    <Compile Include="Assets\Scripts\Utilities\GameEvent.cs" />
+    <Compile Include="Assets\Scripts\Utilities\EventDispatcher.cs" />
     <Compile Include="Assets\Scripts\Utilities\GameInput.cs" />
     <Compile Include="Assets\Scripts\Utilities\IOFile.cs" />
+    <Compile Include="Assets\Scripts\Utilities\ServiceLocator.cs" />
     <Compile Include="Assets\Scripts\Utilities\Singleton.cs" />
+    <Compile Include="Assets\Scripts\Utilities\UniqueID.cs" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMPro_Properties.cginc" />

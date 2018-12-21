@@ -42,16 +42,16 @@ public class HUDManager : Singleton<HUDManager>
 
     public void OnButtonSaveClick()
     {
-        GameEvent.TriggerEvent<GameCommandEvent>(new GameCommandEvent(GamePlay.GameCommand.SaveBoard, null));
+        EventDispatcher.TriggerEvent<GameCommandEvent>(new GameCommandEvent(GamePlay.GameCommand.SaveBoard, null));
     }
 
     public void OnButtonLoadeClick()
     {
-        GameEvent.TriggerEvent<GameCommandEvent>(new GameCommandEvent(GamePlay.GameCommand.LoadBoard, null));
+        EventDispatcher.TriggerEvent<GameCommandEvent>(new GameCommandEvent(GamePlay.GameCommand.LoadBoard, null));
     }
 
     public void OnButtonResetClick()
     {
-        GameEvent.TriggerEvent<GameCommandEvent>(new GameCommandEvent(GamePlay.GameCommand.ResetBoard, null));
+        EventDispatcher.TriggerEvent<GameCommandEvent>(new GameCommandEvent(GamePlay.GameCommand.ResetBoard, null));
     }
 }

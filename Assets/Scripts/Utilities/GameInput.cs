@@ -4,9 +4,16 @@ using UnityEngine;
 
 public class GameInput : Singleton<GameInput>
 {
-    public enum TouchType { TouchDown, TouchUp, TouchMove }
+    public enum InputType { TouchDown, TouchUp, TouchMove, KeyPress, KeyRelease }
+    public enum KeyEvent
+    {
+        Undefined, LeftTrigger, RightTrigger, LeftStickX, LeftStickY, RightStickX, RightStickY,
+        DpadUp, DpadDown, DpadLeft, DpadRight, LeftBumper, RightBumper, ButtonY, ButtonA, ButtonX, ButtonB,
+        ButtonStart, ButtonSelect, ButtonBack, LeftStickButton, RightStickButton
+    }
 
-    protected Dictionary<TouchType, List<Action<Vector3>>> mTouchListeners = new Dictionary<TouchType, List<Action<Vector3>>>();
+    protected Dictionary<InputType, List<Action<Vector3>>> mTouchListeners = new Dictionary<InputType, List<Action<Vector3>>>();
+    protected Dictionary<InputType, List<Action<KeyEvent>>> mKeyListeners = new Dictionary<InputType, List<Action<KeyEvent>>>();
     protected Camera mMainCamera;
 
     void Start()
@@ -16,87 +23,123 @@ public class GameInput : Singleton<GameInput>
 
     void Update()
     {
-        ProcessTouch();
+        HandleTouch();
+        HandleKey();
     }
 
-    protected virtual void ProcessTouch()
+    protected virtual void HandleTouch()
     {
         Vector3 position;
 
         if (Input.GetMouseButton(0))
         {
             position = mMainCamera.ScreenToWorldPoint(Input.mousePosition);
-            if (mTouchListeners.ContainsKey(TouchType.TouchMove))
-            {
-                foreach (var action in mTouchListeners[TouchType.TouchMove])
-                {
-                    action(new Vector3(position.x, position.y, 0.0f));
-                }
-            }
+            OnTouch(InputType.TouchMove, position);
         }
 
         if (Input.GetMouseButtonDown(0))
         {
             position = mMainCamera.ScreenToWorldPoint(Input.mousePosition);
-            if (mTouchListeners.ContainsKey(TouchType.TouchDown))
-            {
-                foreach (var action in mTouchListeners[TouchType.TouchDown])
-                {
-                    action(new Vector3(position.x, position.y, 0.0f));
-                }
-            }
+            OnTouch(InputType.TouchDown, position);
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             position = mMainCamera.ScreenToWorldPoint(Input.mousePosition);
-            if (mTouchListeners.ContainsKey(TouchType.TouchUp))
-            {
-                foreach (var action in mTouchListeners[TouchType.TouchUp])
-                {
-                    action(new Vector3(position.x, position.y, 0.0f));
-                }
-            }
+            OnTouch(InputType.TouchUp, position);
         }
     }
 
-    protected void AddTouchListener(TouchType type, Action<Vector3> action)
+    protected void HandleKey()
     {
-        if (!mTouchListeners.ContainsKey(type))
-            mTouchListeners[type] = new List<Action<Vector3>>();
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) OnKey(InputType.KeyPress, KeyEvent.DpadUp);
+        if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.W)) OnKey(InputType.KeyRelease, KeyEvent.DpadUp);
 
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) OnKey(InputType.KeyPress, KeyEvent.DpadDown);
+        if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.S)) OnKey(InputType.KeyRelease, KeyEvent.DpadDown);
 
-        for (int i = 0; i < mTouchListeners[type].Count; i++)
+        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) OnKey(InputType.KeyPress, KeyEvent.DpadLeft);
+        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A)) OnKey(InputType.KeyRelease, KeyEvent.DpadLeft);
+
+        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) OnKey(InputType.KeyPress, KeyEvent.DpadRight);
+        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D)) OnKey(InputType.KeyRelease, KeyEvent.DpadRight);
+    }
+
+    protected void OnTouch(InputType type, Vector3 position)
+    {
+        if (!mTouchListeners.ContainsKey(type)) return;
+
+        foreach (var action in mTouchListeners[type])
         {
-            if (mTouchListeners[type][i] == action)
+            action(new Vector3(position.x, position.y, 0.0f));
+        }
+    }
+
+    protected void OnKey(InputType type, KeyEvent keyEvent)
+    {
+        Debug.Log(string.Format("{0} | {1}", type, keyEvent));
+        if (!mKeyListeners.ContainsKey(type)) return;
+
+        foreach (var action in mKeyListeners[type])
+        {
+            action(keyEvent);
+        }
+    }
+
+    protected void AddListener<T>(Dictionary<InputType, List<Action<T>>> listener, InputType type, Action<T> action)
+    {
+        if(!listener.ContainsKey(type))
+            listener[type] = new List<Action<T>>();
+
+        for (int i = 0; i < listener[type].Count; i++)
+        {
+            if (listener[type][i] == action)
             {
                 return;
             }
         }
 
-        mTouchListeners[type].Add(action);
+        listener[type].Add(action);
     }
 
-    protected void RemoveTouchListener(TouchType type, Action<Vector3> action)
+    protected void RemoveListener<T>(Dictionary<InputType, List<Action<T>>> listener, InputType type, Action<T> action)
     {
-        if (!mTouchListeners.ContainsKey(type))
+        if (!listener.ContainsKey(type))
         {
             return;
         }
 
-        for (int i = 0; i < mTouchListeners[type].Count; i++)
+        for (int i = 0; i < listener[type].Count; i++)
         {
-            mTouchListeners[type].Remove(action);
+            listener[type].Remove(action);
         }
     }
 
-    public static void RegisterListener(TouchType type, Action<Vector3> action)
+    public static void RegisterTouchEvent(InputType type, Action<Vector3> action)
     {
-        Instance.AddTouchListener(type, action);
+        if (type > InputType.TouchMove) return;
+
+        Instance.AddListener<Vector3>(Instance.mTouchListeners, type, action);
     }
 
-    public static void UnRegisterListener(TouchType type, Action<Vector3> action)
+    public static void UnRegisterTouchEvent(InputType type, Action<Vector3> action)
     {
-        Instance.RemoveTouchListener(type, action);
+        if (type > InputType.TouchMove) return;
+
+        Instance.RemoveListener<Vector3>(Instance.mTouchListeners, type, action);
+    }
+
+    public static void RegisterKeyEvent(InputType type, Action<KeyEvent> action)
+    {
+        if (type < InputType.KeyPress) return;
+
+        Instance.AddListener<KeyEvent>(Instance.mKeyListeners, type, action);
+    }
+
+    public static void UnRegisterKeyEvent(InputType type, Action<KeyEvent> action)
+    {
+        if (type < InputType.KeyPress) return;
+
+        Instance.RemoveListener<KeyEvent>(Instance.mKeyListeners, type, action);
     }
 }

@@ -42,20 +42,20 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
 
     protected virtual void OnEnable()
     {
-        GameInput.RegisterListener(GameInput.TouchType.TouchDown, OnTouchDown);
-        GameInput.RegisterListener(GameInput.TouchType.TouchMove, OnTouchMove);
-        GameInput.RegisterListener(GameInput.TouchType.TouchUp, OnTouchUp);
+        GameInput.RegisterTouchEvent(GameInput.InputType.TouchDown, OnTouchDown);
+        GameInput.RegisterTouchEvent(GameInput.InputType.TouchMove, OnTouchMove);
+        GameInput.RegisterTouchEvent(GameInput.InputType.TouchUp, OnTouchUp);
 
-        GameEvent.AddListener<GameCommandEvent>(this);
+        EventDispatcher.AddListener<GameCommandEvent>(this);
     }
 
     protected virtual void OnDisable()
     {
-        GameInput.UnRegisterListener(GameInput.TouchType.TouchDown, OnTouchDown);
-        GameInput.UnRegisterListener(GameInput.TouchType.TouchMove, OnTouchMove);
-        GameInput.UnRegisterListener(GameInput.TouchType.TouchUp, OnTouchUp);
+        GameInput.UnRegisterTouchEvent(GameInput.InputType.TouchDown, OnTouchDown);
+        GameInput.UnRegisterTouchEvent(GameInput.InputType.TouchMove, OnTouchMove);
+        GameInput.UnRegisterTouchEvent(GameInput.InputType.TouchUp, OnTouchUp);
 
-        GameEvent.RemoveListener<GameCommandEvent>(this);
+        EventDispatcher.RemoveListener<GameCommandEvent>(this);
     }
 
     public void OnTouchDown(Vector3 postion)
@@ -106,7 +106,7 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
                 if (ball)
                 {
                     ball.Explode();
-                    GameEvent.TriggerEvent<GameScoreEvent>(new GameScoreEvent(GamePlay.GameScore.Add, 1));
+                    EventDispatcher.TriggerEvent<GameScoreEvent>(new GameScoreEvent(GamePlay.GameScore.Add, 1));
                 }
 
                 cell.Ball = null;
@@ -298,7 +298,7 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
             }
         }
 
-        if (colors.Count > 0) GameEvent.TriggerEvent<BallChangeEvent>(new BallChangeEvent(BallChangeEnum.Change, colors));
+        if (colors.Count > 0) EventDispatcher.TriggerEvent<BallChangeEvent>(new BallChangeEvent(BallChangeEnum.Change, colors));
     }
 
     //

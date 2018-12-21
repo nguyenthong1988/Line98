@@ -41,14 +41,14 @@ public class GameManager : Singleton<GameManager>, IEvent<GameScoreEvent>, IEven
 
     protected virtual void OnEnable()
     {
-        GameEvent.AddListener<GameScoreEvent>(this);
-        GameEvent.AddListener<GameCommandEvent>(this);
+        EventDispatcher.AddListener<GameScoreEvent>(this);
+        EventDispatcher.AddListener<GameCommandEvent>(this);
     }
 
     protected virtual void OnDisable()
     {
-        GameEvent.RemoveListener<GameScoreEvent>(this);
-        GameEvent.RemoveListener<GameCommandEvent>(this);
+        EventDispatcher.RemoveListener<GameScoreEvent>(this);
+        EventDispatcher.RemoveListener<GameCommandEvent>(this);
     }
 
     public int NumOfKindBall

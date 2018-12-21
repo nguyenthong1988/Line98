@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class Pooler : MonoBehaviour
 {
@@ -11,7 +12,6 @@ public class Pooler : MonoBehaviour
 
     protected List<GameObject> mPooledObjects;
     protected GameObject mObjectPooler;
-
 
     void Awake() => Initialize();
 

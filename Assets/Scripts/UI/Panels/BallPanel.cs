@@ -29,12 +29,12 @@ public class BallPanel : MonoBehaviour, IEvent<BallChangeEvent>
 
     protected virtual void OnEnable()
     {
-        GameEvent.AddListener<BallChangeEvent>(this);
+        EventDispatcher.AddListener<BallChangeEvent>(this);
     }
 
     protected virtual void OnDisable()
     {
-        GameEvent.RemoveListener<BallChangeEvent>(this);
+        EventDispatcher.RemoveListener<BallChangeEvent>(this);
     }
 
     protected void SetImage(Image image, Ball.Color color)

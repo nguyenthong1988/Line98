@@ -9,11 +9,11 @@ public interface IEvent<T> : IEventBase
     void OnEvent(T eventType);
 }
 
-public static class GameEvent
+public static class EventDispatcher
 {
     private static Dictionary<Type, List<IEventBase>> mSubscribers = new Dictionary<Type, List<IEventBase>>();
 
-    static GameEvent()
+    static EventDispatcher()
     {
     }
 
@@ -83,5 +83,18 @@ public static class GameEvent
         {
             (subscribers[i] as IEvent<Event>).OnEvent(e);
         }
+    }
+}
+
+public static class EventRegister
+{
+    public static void RegisterEvent<EventType>(this IEvent<EventType> caller) where EventType : struct
+    {
+        EventDispatcher.AddListener<EventType>(caller);
+    }
+
+    public static void UnRegisterEvent<EventType>(this IEvent<EventType> caller) where EventType : struct
+    {
+        EventDispatcher.RemoveListener<EventType>(caller);
     }
 }
