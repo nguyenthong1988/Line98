@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-public class BoardSave
+public class BoardData
 {
-    public BoardSave() { }
-    public BoardSave(Cell[,] cells, int score = 0 ,float duration = 0, int hardmode = 0)
+    public BoardData() { }
+    public BoardData(Cell[,] cells, int score = 0 ,float duration = 0, int hardmode = 0)
     {
         if (cells.Length == 0) return;
         Score = score;
@@ -40,7 +40,7 @@ public class BoardSave
             {
                 if (BallsColor[i * Board.BOARD_SIZE + j] >= 0)
                 {
-                    cells[i, j].AddBall(DataManager.Instance.TakeBall((Ball.Color)BallsColor[i * Board.BOARD_SIZE + j]));
+                    cells[i, j].AttachBall(DataManager.Instance.TakeBall((Ball.Color)BallsColor[i * Board.BOARD_SIZE + j]));
                     cells[i, j].SetBallSize((Ball.Size)(BallsSize[i * Board.BOARD_SIZE + j]));
                 }
             }

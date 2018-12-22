@@ -6,6 +6,7 @@ public class Ball : ObjectPool
 {
     public enum Color { None = -1, Red, Green, Blue, Cyan, Magenta, Yellow, Brown, Ghost }
     public enum Size { Dot, Ball };
+    public enum State { Idle, Selected }
 
     public Color BallColor;
     public Size BallSize;
@@ -13,13 +14,13 @@ public class Ball : ObjectPool
     public GameObject ExplosiveEffect;
 
     protected Animator mAnimator;
-    protected FollowPath mFollowPath;
+    protected AttributeMovement mMovement;
 
     protected override void Initialize()
     {
         base.Initialize();
         mAnimator = GetComponent<Animator>();
-        mFollowPath = GetComponent<FollowPath>();
+        mMovement = GetComponent<AttributeMovement>();
     }
 
     public void SetSize(Size size)
@@ -49,9 +50,9 @@ public class Ball : ObjectPool
 
     public void Move(List<Vector3> path, Action onMoveDone = null)
     { 
-        if(mFollowPath && path != null && path.Count > 0)
+        if(mMovement && path != null && path.Count > 0)
         {
-            mFollowPath.Move(path, onMoveDone);
+            mMovement.MoveOnPath(path, onMoveDone);
         }
     }
 

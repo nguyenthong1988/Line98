@@ -15,11 +15,15 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
     public Ball BallTemplate;
 
     protected Cell mSelectedCell = null;
+    protected Ball mSelectedBall = null;
 
     protected List<Vector2Int> mPointsToCheck;
+    protected List<Vector2Int> mMovePath;
 
     protected bool mIsMoving;
     protected bool mIsTouchable = true;
+
+    protected Vector2Int mPointerIndex = new Vector2Int(0, 0);
 
     void Awake() => Initialize();
 
@@ -46,6 +50,8 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         GameInput.RegisterTouchEvent(GameInput.InputType.TouchMove, OnTouchMove);
         GameInput.RegisterTouchEvent(GameInput.InputType.TouchUp, OnTouchUp);
 
+        GameInput.RegisterKeyEvent(GameInput.InputType.KeyPress, OnKeyDown);
+
         EventDispatcher.AddListener<GameCommandEvent>(this);
     }
 
@@ -55,45 +61,117 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         GameInput.UnRegisterTouchEvent(GameInput.InputType.TouchMove, OnTouchMove);
         GameInput.UnRegisterTouchEvent(GameInput.InputType.TouchUp, OnTouchUp);
 
+        GameInput.UnRegisterKeyEvent(GameInput.InputType.KeyPress, OnKeyDown);
+
         EventDispatcher.RemoveListener<GameCommandEvent>(this);
+    }
+
+    private void OnKeyDown(GameInput.KeyEvent keyEvent)
+    {
+        switch (keyEvent)
+        {
+            case GameInput.KeyEvent.DpadUp:
+                MovePointer(-1, 0);
+                break;
+            case GameInput.KeyEvent.DpadDown:
+                MovePointer(1, 0);
+                break;
+            case GameInput.KeyEvent.DpadLeft:
+                MovePointer(0, -1);
+                break;
+            case GameInput.KeyEvent.DpadRight:
+                MovePointer(0, 1);
+                break;
+            case GameInput.KeyEvent.ButtonA:
+                SelectCell(mPointerIndex);
+                break;
+        }
+
+        mCells[mPointerIndex.x, mPointerIndex.y].OnHover(true);
+    }
+
+    protected void MovePointer(int offsetx, int offsety)
+    {
+        Vector2Int nextIndex = mPointerIndex + new Vector2Int(offsetx, offsety);
+        if (IsInside(nextIndex))
+        {
+            mCells[mPointerIndex.x, mPointerIndex.y].OnHover(false);
+            mPointerIndex = nextIndex;
+            mCells[mPointerIndex.x, mPointerIndex.y].OnHover(true);
+        }
+    }
+
+    public void SelectCell(Vector2Int pointerIndex)
+    { 
+        if(mSelectedCell)
+        {
+            if(mSelectedCell.Index == pointerIndex)
+            {
+                mSelectedCell.ChangeBallState(Ball.State.Idle);
+                mSelectedCell = null;
+
+                return;
+            }
+
+            int value = PointToCell(pointerIndex);
+            if(value == 0)
+            {
+                mCells[pointerIndex.x, pointerIndex.y].AttachBall(mSelectedCell.DettachBall());
+                mCells[pointerIndex.x, pointerIndex.y].ChangeBallState(Ball.State.Idle);
+                mPointsToCheck.Add(pointerIndex);
+                MoveBallOnPath(mCells[pointerIndex.x, pointerIndex.y].Ball, mMovePath);
+                mSelectedCell = null;
+            }
+            else if(value == 1)
+            {
+                if (mCells[pointerIndex.x, pointerIndex.y].IsSelectable)
+                {
+                    if (mSelectedCell.Ball) mSelectedCell.ChangeBallState(Ball.State.Idle);
+                    mSelectedCell = mCells[pointerIndex.x, pointerIndex.y];
+                    if (mSelectedCell) mSelectedCell.ChangeBallState(Ball.State.Selected);
+                }
+            }
+        }
+        else
+        { 
+            if(mCells[pointerIndex.x, pointerIndex.y].IsSelectable)
+            {
+                mSelectedCell = mCells[pointerIndex.x, pointerIndex.y];
+                if (mSelectedCell) mSelectedCell.ChangeBallState(Ball.State.Selected);
+            }
+        }
+    }
+
+    public int PointToCell(Vector2Int index)
+    {
+        mMovePath = null;
+        if (!mCells[index.x, index.y].IsAvailable)
+            return 1;//gray
+
+        mMovePath = BuildPath(mSelectedCell.Index, index);
+        if (mMovePath.IsNullOrEmpty())
+            return 2;//mask
+        return 0;
     }
 
     public void OnTouchDown(Vector3 postion)
     {
         if (!mIsTouchable) return;
-        if (mSelectedCell)
+
+        var seletedIndex = GetIndex(postion);
+        if (seletedIndex.x > -1 && seletedIndex.y > -1)
+            SelectCell(seletedIndex);
+    }
+
+    protected Vector2Int GetIndex(Vector3 position)
+    {
+        foreach (Cell cell in mCells)
         {
-            List<Vector3> path;
-            Cell cell = GetMovableCell(postion, out path);
-            if (cell)
-            {
-                cell.Ball = mSelectedCell.Ball;
-                cell.Ball.Idle();
-                //cell.Ball.transform.position = cell.transform.position;
-
-                CheckBoard();
-                AddBalls(3, GameManager.Instance.NumOfKindBall, Ball.Size.Dot);
-                mPointsToCheck.Add(cell.Index);
-
-                if(path != null || path.Count > 0)
-                {
-                    cell.Ball.Move(path, OnMoveDone);
-                }
-                if (mSelectedCell.Ball) mSelectedCell.Ball.Idle();
-                mSelectedCell.Empty();
-            }
-            else
-            {
-                if (mSelectedCell.Ball) mSelectedCell.Ball.Idle();
-            }
-
-            mSelectedCell = null;
+            if (cell.Bounds.Contains(position))
+                return cell.Index;
         }
-        else
-        {
-            mSelectedCell = SelectCell(postion);
-            if (mSelectedCell) mSelectedCell.Ball.Selected();
-        }
+
+        return new Vector2Int(-1, -1);
     }
 
     protected void ExplodeBall(Vector2Int cellIndex)
@@ -114,64 +192,18 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         }
     }
 
-    protected Cell GetEmptyCell(Vector3 postion)
+    protected List<Vector2Int> BuildPath(Vector2Int from, Vector2Int to)
     {
-        foreach (Cell cell in mCells)
+        List<Vector2Int> path = new List<Vector2Int>();
+        path = Algorithm.CheckPath(mCells, from, to);
+        string debugString = "";
+        foreach (var node in path)
         {
-            if (cell.Bounds.Contains(postion) && cell.IsEmpty)
-            {
-                Debug.Log("Get empty cell " + cell.GetDebugString());
-                var path = CheckPath(mCells, mSelectedCell.Index, cell.Index);
-                string debugString = "";
-                List<Vector2> m = new List<Vector2>();
-                foreach(var node in path)
-                {
-                    debugString += string.Format("{0}|{1} - ", node.x, node.y);
-                }
-                Debug.Log(debugString);
-
-                return cell;
-            }
+            debugString += string.Format("{0}|{1} - ", node.x, node.y);
         }
+        Debug.Log(debugString);
 
-        return null;
-    }
-
-    protected Cell GetMovableCell(Vector3 position, out List<Vector3> path)
-    {
-        foreach (Cell cell in mCells)
-        {
-            if (cell.Bounds.Contains(position) && cell.IsEmpty)
-            {
-                Debug.Log("Get empty cell " + cell.GetDebugString());
-                path = CheckPath(mCells, mSelectedCell.Index, cell.Index);
-                string debugString = "";
-                foreach (var node in path)
-                {
-                    debugString += string.Format("{0}|{1} - ", node.x, node.y);
-                }
-                Debug.Log(debugString);
-
-                return (path != null && path.Count > 0) ? cell : null;
-            }
-        }
-
-        path = null;
-        return null;
-    }
-
-    protected Cell SelectCell(Vector3 postion)
-    {
-        foreach (Cell cell in mCells)
-        {
-            if (cell.Bounds.Contains(postion) && cell.IsSelectable)
-            {
-                Debug.Log("Select cell " + cell.GetDebugString());
-                return cell;
-            }
-        }
-
-        return null;
+        return (path != null && path.Count > 0) ? path : null;
     }
 
     public void CheckBoard()
@@ -201,7 +233,10 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
     {
         if (CellTemplate == null) return;
 
-        float offsetX = -3, offsetY = 3;
+        float cellSize = 1f;
+        float offset = (BOARD_SIZE - 1) * cellSize / 2;
+
+        float offsetX = -offset, offsetY = offset;
 
         for (int i = 0; i < BOARD_SIZE; i++)
         {
@@ -214,11 +249,11 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
                     mCells[i, j].SetColorLight();
                 else
                     mCells[i, j].SetColorDark();
-                offsetX += 0.75f;
+                offsetX += cellSize;
             }
 
-            offsetY -= 0.75f;
-            offsetX = -3;
+            offsetY -= cellSize;
+            offsetX = -offset;
         }
     }
 
@@ -233,7 +268,6 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
 
             cell.Ball = null;
         }
-
     }
 
     public void LoadFromSave()
@@ -243,22 +277,31 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         SaveManager.Instance.LoadBoardSave(mCells);
     }
 
-    public void OnMoveDone()
+    public void MoveBallOnPath(Ball ball, List<Vector2Int> cellsIndex)
+    {
+        if (ball == null || cellsIndex.IsNullOrEmpty()) return;
+
+        List<Vector3> pos = cellsIndex.Select(p => mCells[p.x, p.y].transform.position).ToList<Vector3>();
+        ball.transform.position = pos[0];
+        ball.Move(pos, OnMovePathDone);
+    }
+
+    public void OnMovePathDone()
     {
         Debug.Log("mOnMoveDone");
+
+        CheckBoard();
+        var cells = AddBalls(3, GameManager.Instance.NumOfKindBall, Ball.Size.Dot);
 
         if (mPointsToCheck.Count > 0)
         {
             foreach (var point in mPointsToCheck)
             {
-                List<Vector2Int> points = CheckLines(point);
+                List<Vector2Int> points = Algorithm.CheckLines(mCells, point);
 
                 if (points != null && points.Count > 0)
                 {
-                    foreach (Vector2Int p in points)
-                    {
-                        ExplodeBall(p);
-                    }
+                    foreach (var p in points) ExplodeBall(p);
                 }
             }
 
@@ -266,12 +309,12 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         }
     }
 
-    protected bool IsInside(int x, int y)
+    protected bool IsInside(Vector2Int pos)
     {
-        return 0 <= x && BOARD_SIZE > x && 0 <= y && BOARD_SIZE > y;
+        return 0 <= pos.x && BOARD_SIZE > pos.x && 0 <= pos.y && BOARD_SIZE > pos.y;
     }
 
-    public void AddBalls(int numOfBall, int numOfType, Ball.Size size)
+    public List<Cell> AddBalls(int numOfBall, int numOfType, Ball.Size size)
     {
         List<Cell> emptyCells = new List<Cell>();
         foreach (Cell cell in mCells)
@@ -288,7 +331,7 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
             Cell cell = randomCells[i];
             if (cell)
             {
-                cell.AddBall(DataManager.Instance.TakeRandomBall(numOfType));
+                cell.AttachBall(DataManager.Instance.TakeRandomBall(numOfType));
                 cell.SetBallSize(size);
 
                 if(cell.Ball && cell.Ball.BallSize == Ball.Size.Dot)
@@ -299,125 +342,8 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         }
 
         if (colors.Count > 0) EventDispatcher.TriggerEvent<BallChangeEvent>(new BallChangeEvent(BallChangeEnum.Change, colors));
-    }
 
-    //
-    // From here I use an algorithm that I found in internet
-    // My weakness is in algorithm
-    //
-    public List<Vector3> CheckPath(Cell[,] cells, Vector2Int from, Vector2Int to)
-    {
-        Vector2Int[,] dad = new Vector2Int[BOARD_SIZE, BOARD_SIZE];
-        Vector2Int[] queue = new Vector2Int[BOARD_SIZE * BOARD_SIZE];
-        Vector2Int[] trace = new Vector2Int[BOARD_SIZE * BOARD_SIZE];
-
-        bool ghostCell = cells[from.x, from.y].BallColor >= Ball.Color.Ghost;
-
-        int[] u = { 1, 0, -1, 0 };
-        int[] v = { 0, 1, 0, -1 };
-
-        int fist = 0, last = 0, x, y, i, j, k;
-        for (x = 0; x < BOARD_SIZE; x++)
-            for (y = 0; y < BOARD_SIZE; y++)
-            {
-                dad[x, y] = new Vector2Int(-1, -1);
-                trace[x * BOARD_SIZE + y] = new Vector2Int(-5, -5);
-            } 
-
-        queue[0] = to;
-        dad[to.x, to.y].x = -2;
-
-        Vector2Int dir = new Vector2Int();
-
-        while (fist <= last)
-        {
-            x = queue[fist].x; y = queue[fist].y;
-            fist++;
-            for (k = 0; k < 4; k++)
-            {
-                dir.x = x + u[k];
-                dir.y = y + v[k];
-                if (dir.x == from.x && dir.y == from.y)
-                {
-                    dad[from.x, from.y] = new Vector2Int(x, y);
-
-                    i = 0;
-                    while (true)
-                    {
-                        trace[i] = from;
-                        i++;
-                        k = from.x;
-                        from.x = dad[from.x, from.y].x;
-                        if (from.x == -2) break;
-                        from.y = dad[k, from.y].y;
-                    }
-                    return trace.Where(p => (p.x > -5 && p.y > -5)).Select(pp => cells[pp.x, pp.y].gameObject.transform.position).ToList<Vector3>();
-                }
-
-                if (!IsInside(dir.x, dir.y)) continue;
-
-                if(dad[dir.x, dir.y].x == -1 && ((cells[dir.x, dir.y].IsBallMoveable || ghostCell)))
-                {
-                    last++;
-                    queue[last] = dir;
-                    dad[dir.x, dir.y] = new Vector2Int(x, y);
-                }
-            }
-        }
-
-        return trace.Where(p => (p.x > -5 && p.y > -5)).Select(pp => cells[pp.x, pp.y].gameObject.transform.position).ToList<Vector3>();
-    }
-
-    //
-    // End
-    //
-
-    public List<Vector2Int> CheckLines(Vector2Int point)
-    {
-        List<Vector2Int> list = new List<Vector2Int>();
-        int x = (int)point.x, y = (int)point.y;
-        int[] u = { 0, 1, 1, 1 };
-        int[] v = { 1, 0, -1, 1 };
-        int i, j, k;
-
-        for (int t = 0; t < 4; t++)
-        {
-            k = 0; i = x; j = y;
-            while (true)
-            {
-                i += u[t]; j += v[t];
-                if (!IsInside(i, j))
-                    break;
-                if (mCells[i, j].IsEmpty || mCells[i, j].Ball.BallColor != mCells[x, y].Ball.BallColor)
-                    break;
-                k++;
-            }
-            i = x; j = y;
-            while (true)
-            {
-                i -= u[t]; j -= v[t];
-                if (!IsInside(i, j))
-                    break;
-                if (mCells[i, j].IsEmpty || mCells[i, j].Ball.BallColor != mCells[x, y].Ball.BallColor)
-                    break;
-                k++;
-            }
-            k++;
-            if (k >= POINT_TO_SCORE)
-                while (k-- > 0)
-                {
-                    i += u[t]; j += v[t];
-                    if (i != x || j != y)
-                        list.Add(new Vector2Int(i, j));
-                }
-        }
-
-        if (list.Count > 0)
-        {
-            list.Add(new Vector2Int(x, y));
-        } 
-        else list = null;
-        return list;
+        return randomCells;
     }
 
     public void OnEvent(GameCommandEvent eventType)

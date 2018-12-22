@@ -63,6 +63,9 @@ public class GameInput : Singleton<GameInput>
 
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) OnKey(InputType.KeyPress, KeyEvent.DpadRight);
         if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D)) OnKey(InputType.KeyRelease, KeyEvent.DpadRight);
+
+        if (Input.GetKeyDown(KeyCode.Return)) OnKey(InputType.KeyPress, KeyEvent.ButtonA);
+        if (Input.GetKeyUp(KeyCode.Return)) OnKey(InputType.KeyRelease, KeyEvent.ButtonA);
     }
 
     protected void OnTouch(InputType type, Vector3 position)
@@ -77,7 +80,6 @@ public class GameInput : Singleton<GameInput>
 
     protected void OnKey(InputType type, KeyEvent keyEvent)
     {
-        Debug.Log(string.Format("{0} | {1}", type, keyEvent));
         if (!mKeyListeners.ContainsKey(type)) return;
 
         foreach (var action in mKeyListeners[type])

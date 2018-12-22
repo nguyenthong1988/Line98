@@ -9,6 +9,7 @@ public class Pooler : MonoBehaviour
 
     public ObjectPool Template;
     public int PoolSize = 0;
+    public bool UseFixedPoolSize = false;
 
     protected List<GameObject> mPooledObjects;
     protected GameObject mObjectPooler;
@@ -54,6 +55,38 @@ public class Pooler : MonoBehaviour
             }
         }
 
+        if(!UseFixedPoolSize) return AddObjectToPool();
+
         return null;
+    }
+
+    public virtual GameObject Spawn(Vector3 position, Transform parent = null)
+    {
+        GameObject obj = GetObject();
+
+        if (obj)
+        {
+            obj.SetActive(true);
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+        }
+
+        return obj;
+    }
+
+    public virtual GameObject Spawn(Vector3 position, Quaternion rotation , Vector3 scale, Transform parent = null)
+    {
+        GameObject obj = GetObject();
+
+        if(obj)
+        {
+            obj.SetActive(true);
+            obj.transform.SetParent(parent);
+            obj.transform.position = position;
+            obj.transform.rotation = rotation;
+            obj.transform.localScale = scale;
+        }
+
+        return obj;
     }
 }

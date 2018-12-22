@@ -14,6 +14,9 @@ public class Cell : ObjectBound
     public Vector2Int Index { get; set; }
     public Ball Ball { get; set; }
 
+    [Header("Highlight")]
+    public GameObject HightLight;
+
     protected SpriteRenderer mSpriteRenderer;
 
     protected override void Initialize()
@@ -38,19 +41,28 @@ public class Cell : ObjectBound
         if (mSpriteRenderer && SpriteDark) mSpriteRenderer.sprite = SpriteDark;
     }
 
-    public void SetBallSize(Ball.Size size)
-    {
-        if (Ball == null) return;
-        Ball.SetSize(size);
-    }
-
-    public void AddBall(Ball ball)
+    public void AttachBall(Ball ball)
     {
         if (!ball) return;
+
+        if(Ball != null) DettachBall().Destroy();
 
         Ball = ball;
         Ball.transform.position = transform.position;
         Ball.gameObject.SetActive(true);
+    }
+
+    public Ball DettachBall()
+    {
+        Ball ball = Ball;
+        Ball = null;
+        return ball;
+    }
+
+    public void SetBallSize(Ball.Size size)
+    {
+        if (Ball == null) return;
+        Ball.SetSize(size);
     }
 
     public Ball.Color BallColor
@@ -60,11 +72,6 @@ public class Cell : ObjectBound
             if (!Ball) return Ball.Color.None;
             return Ball.BallColor;
         }
-    }
-
-    public void Empty()
-    {
-        Ball = null;
     }
 
     public bool IsEmpty
@@ -83,11 +90,23 @@ public class Cell : ObjectBound
         }
     }
 
-    public bool IsBallMoveable
+    public bool IsAvailable
     { 
         get
         {
             return !Ball || Ball.BallSize <= Ball.Size.Dot;
         }
+    }
+
+    public void OnHover(bool isHover)
+    {
+        HightLight.SetActive(isHover);
+    }
+
+    //Ball state
+    public void ChangeBallState(Ball.State state)
+    {
+        if (state == Ball.State.Idle && Ball != null) Ball.Idle();
+        else if (state == Ball.State.Selected && Ball != null) Ball.Selected();
     }
 }

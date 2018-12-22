@@ -60,26 +60,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Gameplay\Algorithm.cs" />
     <Compile Include="Assets\Scripts\Gameplay\ICommand.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\DataManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\HUDManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\SaveManager.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Objects\AttributeMovement.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\Ball.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\Board.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\Cell.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\Objects\FollowPath.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\ObjectBound.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Player\IUser.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Player\Player.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Player\User.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\Save\BoardSave.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Save\BoardData.cs" />
     <Compile Include="Assets\Scripts\ObjectPooler.cs" />
     <Compile Include="Assets\Scripts\Pooler.cs" />
     <Compile Include="Assets\Scripts\UI\Objects\BallImage.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\BallPanel.cs" />
     <Compile Include="Assets\Scripts\Utilities\EventDispatcher.cs" />
+    <Compile Include="Assets\Scripts\Utilities\Extension.cs" />
     <Compile Include="Assets\Scripts\Utilities\GameInput.cs" />
     <Compile Include="Assets\Scripts\Utilities\IOFile.cs" />
     <Compile Include="Assets\Scripts\Utilities\ServiceLocator.cs" />

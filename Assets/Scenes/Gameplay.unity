@@ -790,7 +790,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameState: 0
-  HardMode: 1
+  HardMode: 0
 --- !u!1 &666113741
 GameObject:
   m_ObjectHideFlags: 0

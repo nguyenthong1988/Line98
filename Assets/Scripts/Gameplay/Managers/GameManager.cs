@@ -84,7 +84,7 @@ public class GameManager : Singleton<GameManager>, IEvent<GameScoreEvent>, IEven
             case GamePlay.GameCommand.SaveBoard:
                 break;
             case GamePlay.GameCommand.LoadBoard:
-                BoardSave boardSave = SaveManager.Instance.GetBoardSave();
+                BoardData boardSave = SaveManager.Instance.GetBoardSave();
                 if(boardSave != null)
                 {
                     GameScore = boardSave.Score;
