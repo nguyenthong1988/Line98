@@ -15,7 +15,7 @@ public class Cell : ObjectBound
     public Ball Ball { get; set; }
 
     [Header("Highlight")]
-    public GameObject HightLight;
+    public CellPointer CellPointer;
 
     protected SpriteRenderer mSpriteRenderer;
 
@@ -100,13 +100,19 @@ public class Cell : ObjectBound
 
     public void OnHover(bool isHover)
     {
-        HightLight.SetActive(isHover);
+        if (isHover) CellPointer.ChangePointerState(CellPointer.PointerState.Active);
+        else CellPointer.ChangePointerState(CellPointer.PointerState.Deactive);
     }
 
     //Ball state
     public void ChangeBallState(Ball.State state)
     {
         if (state == Ball.State.Idle && Ball != null) Ball.Idle();
-        else if (state == Ball.State.Selected && Ball != null) Ball.Selected();
+        else if (state == Ball.State.Selected && Ball != null)
+        {
+            Ball.Selected();
+            CellPointer.ChangePointerState(CellPointer.PointerState.Selected);
+        }
+
     }
 }

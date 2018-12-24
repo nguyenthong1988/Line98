@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Gameplay\Objects\Ball.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\Board.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\Cell.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Objects\CellPointer.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\ObjectBound.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Objects\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Player\IUser.cs" />
@@ -80,6 +81,12 @@
     <Compile Include="Assets\Scripts\Pooler.cs" />
     <Compile Include="Assets\Scripts\UI\Objects\BallImage.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\BallPanel.cs" />
+    <Compile Include="Assets\Scripts\UI\UIScreen\CancelTrigger.cs" />
+    <Compile Include="Assets\Scripts\UI\UIScreen\UIAnimatorScreen.cs" />
+    <Compile Include="Assets\Scripts\UI\UIScreen\UIBaseScreen.cs" />
+    <Compile Include="Assets\Scripts\UI\UIScreen\UIPopup.cs" />
+    <Compile Include="Assets\Scripts\UI\UIScreen\UIScreenManager.cs" />
+    <Compile Include="Assets\Scripts\UI\UIScreen\UITweenScreen.cs" />
     <Compile Include="Assets\Scripts\Utilities\EventDispatcher.cs" />
     <Compile Include="Assets\Scripts\Utilities\Extension.cs" />
     <Compile Include="Assets\Scripts\Utilities\GameInput.cs" />

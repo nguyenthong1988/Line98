@@ -97,7 +97,7 @@ MonoBehaviour:
   CellState: 0
   SpriteLight: {fileID: 21300000, guid: 9c3dd38a407404827b7b027039239be4, type: 3}
   SpriteDark: {fileID: 21300000, guid: e0c3dea75c311402bad08acc01c6635e, type: 3}
-  HightLight: {fileID: 5226762759632581085}
+  CellPointer: {fileID: 6747263928059787238}
 --- !u!1 &5226762759632581085
 GameObject:
   m_ObjectHideFlags: 0
@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 2560566358493186585}
   - component: {fileID: 6651035791528203933}
   - component: {fileID: 3040499738376412346}
+  - component: {fileID: 6747263928059787238}
   m_Layer: 0
   m_Name: Pointer
   m_TagString: Untagged
@@ -197,3 +198,15 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6747263928059787238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5226762759632581085}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2340a8d589c641c3b1ed5f1a84d2507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
