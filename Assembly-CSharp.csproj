@@ -60,6 +60,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Audio\SfxData.cs" />
+    <Compile Include="Assets\Scripts\Audio\SoundData.cs" />
+    <Compile Include="Assets\Scripts\Audio\SoundManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Algorithm.cs" />
     <Compile Include="Assets\Scripts\Gameplay\ICommand.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\DataManager.cs" />
@@ -79,7 +82,8 @@
     <Compile Include="Assets\Scripts\Gameplay\Save\BoardData.cs" />
     <Compile Include="Assets\Scripts\ObjectPooler.cs" />
     <Compile Include="Assets\Scripts\Pooler.cs" />
-    <Compile Include="Assets\Scripts\UI\Objects\BallImage.cs" />
+    <Compile Include="Assets\Scripts\UI\Objects\WidgetBallCount.cs" />
+    <Compile Include="Assets\Scripts\UI\Objects\WidgetBallsCount.cs" />
     <Compile Include="Assets\Scripts\UI\Panels\BallPanel.cs" />
     <Compile Include="Assets\Scripts\UI\UIScreen\CancelTrigger.cs" />
     <Compile Include="Assets\Scripts\UI\UIScreen\UIAnimatorScreen.cs" />

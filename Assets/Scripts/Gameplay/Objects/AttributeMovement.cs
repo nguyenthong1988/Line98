@@ -107,8 +107,8 @@ public class AttributeMovement : MonoBehaviour
     protected void OnMoveDone()
     {
         IsMoving = false;
-        mOnMoveDone?.Invoke();
         mMoveType = MoveType.None;
+        mOnMoveDone?.Invoke();
     }
 
     Vector3 BezierPoint(float t, Vector3 p0, Vector3 p1, Vector3 p2)

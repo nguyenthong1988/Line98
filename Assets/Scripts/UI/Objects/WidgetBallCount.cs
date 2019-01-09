@@ -10,14 +10,13 @@ public class WidgetBallCount : MonoBehaviour
     public TextMeshProUGUI ScoreText;
     public Ball.Color Color;
 
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
+    public void InitWithColor(Ball.Color color)
+    { 
+        if(BallImage)
+        {
+            BallImage.sprite = Resources.Load<Sprite>("Sprites/Balls/ball_" + color.ToString("g").ToLower());
+        }
+        SetTextScore(0);
     }
 
     public Vector3 HitPointPosition
@@ -28,5 +27,10 @@ public class WidgetBallCount : MonoBehaviour
 
             return transform.position;
         }
+    }
+
+    public void SetTextScore(int score)
+    {
+        if (ScoreText && score >= 0) ScoreText.text = string.Format("x{0}", score);
     }
 }
