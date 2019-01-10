@@ -8,15 +8,19 @@ public class WidgetBallCount : MonoBehaviour
 {
     public Image BallImage;
     public TextMeshProUGUI ScoreText;
-    public Ball.Color Color;
+    public Ball.Color BallColor;
+
+    public int Score { get; set; }
 
     public void InitWithColor(Ball.Color color)
-    { 
-        if(BallImage)
+    {
+        Score = 0;
+        BallColor = color;
+        if (BallImage)
         {
-            BallImage.sprite = Resources.Load<Sprite>("Sprites/Balls/ball_" + color.ToString("g").ToLower());
+            BallImage.sprite = Resources.Load<Sprite>("Sprites/Balls/ball_" + BallColor.ToString("g").ToLower());
         }
-        SetTextScore(0);
+        SetTextScore(Score);
     }
 
     public Vector3 HitPointPosition

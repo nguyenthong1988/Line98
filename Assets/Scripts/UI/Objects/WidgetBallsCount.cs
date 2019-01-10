@@ -1,21 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class WidgetBallsCount : MonoBehaviour
+public class WidgetBallsCount : MonoBehaviour, IEvent<GameScoreEvent>
 {
     public WidgetBallCount Template;
 
     protected List<WidgetBallCount> mWidgetsCounter;
 
-    void Start()
+    protected virtual void OnEnable()
     {
-
+        EventDispatcher.AddListener<GameScoreEvent>(this);
     }
 
-    void Update()
+    protected virtual void OnDisable()
     {
-        
+        EventDispatcher.RemoveListener<GameScoreEvent>(this);
     }
 
     public void InitWidgets()
@@ -42,6 +43,8 @@ public class WidgetBallsCount : MonoBehaviour
         {
             AddWidget(InstantiateWidget(Ball.Color.Brown));
         }
+
+        AddWidget(InstantiateWidget(Ball.Color.Ghost));
     }
 
     protected WidgetBallCount InstantiateWidget(Ball.Color color)
@@ -55,5 +58,20 @@ public class WidgetBallsCount : MonoBehaviour
     {
         if (widget) mWidgetsCounter.Add(widget);
         return true;
+    }
+
+    public void OnEvent(GameScoreEvent gameScoreEvent)
+    {
+        switch (gameScoreEvent.Action)
+        {
+            case GamePlay.GameScore.Add:
+                WidgetBallCount widget = mWidgetsCounter.FirstOrDefault(w => w.BallColor == gameScoreEvent.BallColor);
+                if (widget)
+                {
+                    widget.Score++;
+                    widget.SetTextScore(widget.Score);
+                }
+                break;
+        }
     }
 }

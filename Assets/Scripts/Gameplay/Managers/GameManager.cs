@@ -121,10 +121,12 @@ public struct GameScoreEvent
 {
     public GamePlay.GameScore Action;
     public int Score;
+    public Ball.Color BallColor;
 
-    public GameScoreEvent(GamePlay.GameScore action, int score)
+    public GameScoreEvent(GamePlay.GameScore action, int score, Ball.Color ballColor)
     {
         Action = action;
         Score = score;
+        BallColor = ballColor;
     }
 }

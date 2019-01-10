@@ -184,7 +184,7 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
                 if (ball)
                 {
                     ball.Explode();
-                    EventDispatcher.TriggerEvent<GameScoreEvent>(new GameScoreEvent(GamePlay.GameScore.Add, 1));
+                    EventDispatcher.TriggerEvent<GameScoreEvent>(new GameScoreEvent(GamePlay.GameScore.Add, 1, ball.BallColor));
                 }
 
                 cell.Ball = null;
