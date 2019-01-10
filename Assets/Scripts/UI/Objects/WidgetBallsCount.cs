@@ -9,6 +9,11 @@ public class WidgetBallsCount : MonoBehaviour, IEvent<GameScoreEvent>
 
     protected List<WidgetBallCount> mWidgetsCounter;
 
+    void Start()
+    {
+        InitWidgets();
+    }
+
     protected virtual void OnEnable()
     {
         EventDispatcher.AddListener<GameScoreEvent>(this);
@@ -49,7 +54,7 @@ public class WidgetBallsCount : MonoBehaviour, IEvent<GameScoreEvent>
 
     protected WidgetBallCount InstantiateWidget(Ball.Color color)
     {
-        WidgetBallCount widget = Instantiate(Template);
+        WidgetBallCount widget = Instantiate(Template, transform);
         widget.InitWithColor(color);
         return widget;
     }
