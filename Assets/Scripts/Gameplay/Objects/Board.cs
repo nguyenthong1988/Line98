@@ -22,6 +22,7 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
 
     protected bool mIsMoving;
     protected bool mIsTouchable = true;
+    protected float mDeltaPressTime = 0;
 
     protected Vector2Int mPointerIndex = new Vector2Int(0, 0);
 
@@ -51,6 +52,8 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         GameInput.RegisterTouchEvent(GameInput.InputType.TouchUp, OnTouchUp);
 
         GameInput.RegisterKeyEvent(GameInput.InputType.KeyDown, OnKeyDown);
+        GameInput.RegisterKeyEvent(GameInput.InputType.KeyUp, OnKeyUp);
+        GameInput.RegisterKeyEvent(GameInput.InputType.KeyHold, OnKeyHold);
 
         EventDispatcher.AddListener<GameCommandEvent>(this);
     }
@@ -63,12 +66,47 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
 
         GameInput.UnRegisterKeyEvent(GameInput.InputType.KeyDown, OnKeyDown);
         GameInput.UnRegisterKeyEvent(GameInput.InputType.KeyUp, OnKeyUp);
+        GameInput.UnRegisterKeyEvent(GameInput.InputType.KeyHold, OnKeyHold);
 
         EventDispatcher.RemoveListener<GameCommandEvent>(this);
     }
 
     private void OnKeyDown(GameInput.KeyEvent keyEvent)
     {
+        switch (keyEvent)
+        {
+            //case GameInput.KeyEvent.DpadUp:
+            //    MovePointer(-1, 0);
+            //    break;
+            //case GameInput.KeyEvent.DpadDown:
+            //    MovePointer(1, 0);
+            //    break;
+            //case GameInput.KeyEvent.DpadLeft:
+            //    MovePointer(0, -1);
+            //    break;
+            //case GameInput.KeyEvent.DpadRight:
+            //    MovePointer(0, 1);
+            //    break;
+            case GameInput.KeyEvent.ButtonA:
+                SelectCell(mPointerIndex);
+                break;
+        }
+
+        //mCells[mPointerIndex.x, mPointerIndex.y].OnHover(true);
+    }
+
+    private void OnKeyUp(GameInput.KeyEvent keyEvent)
+    {
+
+    }
+
+    private void OnKeyHold(GameInput.KeyEvent keyEvent)
+    {
+        mDeltaPressTime += Time.deltaTime;
+
+        if (mDeltaPressTime < 0.1f) return;
+        mDeltaPressTime = 0f;
+
         switch (keyEvent)
         {
             case GameInput.KeyEvent.DpadUp:
@@ -83,17 +121,9 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
             case GameInput.KeyEvent.DpadRight:
                 MovePointer(0, 1);
                 break;
-            case GameInput.KeyEvent.ButtonA:
-                SelectCell(mPointerIndex);
-                break;
         }
 
         mCells[mPointerIndex.x, mPointerIndex.y].OnHover(true);
-    }
-
-    private void OnKeyUp(GameInput.KeyEvent keyEvent)
-    {
-
     }
 
     protected void MovePointer(int offsetx, int offsety)
@@ -189,8 +219,12 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
                 Ball ball = cell.Ball;
                 if (ball)
                 {
-                    ball.Explode();
-                    EventDispatcher.TriggerEvent<GameScoreEvent>(new GameScoreEvent(GamePlay.GameScore.Add, 1, ball.BallColor));
+                    //ball.Explode();
+                    //EventDispatcher.TriggerEvent<GameScoreEvent>(new GameScoreEvent(GamePlay.GameScore.Add, 1, ball.BallColor));
+
+                    Vector3 endPoint = HUDManager.Instance.GetWidgetCountPosition(ball.BallColor);
+
+                    ball.Move(ball.gameObject.transform.localPosition, endPoint);
                 }
 
                 cell.Ball = null;

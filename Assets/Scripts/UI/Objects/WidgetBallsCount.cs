@@ -65,6 +65,14 @@ public class WidgetBallsCount : MonoBehaviour, IEvent<GameScoreEvent>
         return true;
     }
 
+    public Vector3 GetWidgetPosition(Ball.Color color)
+    {
+        WidgetBallCount widget = mWidgetsCounter.FirstOrDefault(w => w.BallColor == color);
+        if (widget) return widget.HitPointPosition;
+
+        return Vector3.zero;
+    }
+
     public void OnEvent(GameScoreEvent gameScoreEvent)
     {
         switch (gameScoreEvent.Action)

@@ -56,6 +56,14 @@ public class Ball : ObjectPool
         }
     }
 
+    public void Move(Vector3 start, Vector3 end, Action onMoveDone = null)
+    {
+        if (mMovement)
+        {
+            mMovement.MoveCurve(start, end, onMoveDone);
+        }
+    }
+
     public void Explode()
     {
         PlayExplosiveEffect();

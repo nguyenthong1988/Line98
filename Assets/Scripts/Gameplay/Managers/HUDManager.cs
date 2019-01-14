@@ -11,6 +11,9 @@ public class HUDManager : Singleton<HUDManager>
     public TextMeshProUGUI TextScore;
     public TextMeshProUGUI TextPlayedTime;
 
+    [Header("Reference")]
+    public WidgetBallsCount WidgetBallsCount;
+
     public virtual void Initialize()
     { 
         
@@ -53,5 +56,12 @@ public class HUDManager : Singleton<HUDManager>
     public void OnButtonResetClick()
     {
         EventDispatcher.TriggerEvent<GameCommandEvent>(new GameCommandEvent(GamePlay.GameCommand.ResetBoard, null));
+    }
+
+    public Vector3 GetWidgetCountPosition(Ball.Color color)
+    {
+        if (WidgetBallsCount) return WidgetBallsCount.GetWidgetPosition(color);
+
+        return Vector3.zero;
     }
 }

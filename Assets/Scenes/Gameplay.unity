@@ -2123,6 +2123,7 @@ MonoBehaviour:
   TextHighScore: {fileID: 1853772755}
   TextScore: {fileID: 952080831}
   TextPlayedTime: {fileID: 1467306916}
+  WidgetBallsCount: {fileID: 31817048}
 --- !u!1 &1522452144
 GameObject:
   m_ObjectHideFlags: 0

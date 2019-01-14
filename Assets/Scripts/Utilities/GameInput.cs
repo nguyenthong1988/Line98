@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameInput : Singleton<GameInput>
 {
-    public enum InputType { TouchDown, TouchUp, TouchMove, KeyDown, KeyUp }
+    public enum InputType { TouchDown, TouchUp, TouchMove, KeyDown, KeyUp, KeyHold }
     public enum KeyEvent
     {
         Undefined, LeftTrigger, RightTrigger, LeftStickX, LeftStickY, RightStickX, RightStickY,
@@ -52,17 +52,21 @@ public class GameInput : Singleton<GameInput>
 
     protected void HandleKey()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) OnKey(InputType.KeyDown, KeyEvent.DpadUp);
-        if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.W)) OnKey(InputType.KeyUp, KeyEvent.DpadUp);
+        //if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) OnKey(InputType.KeyDown, KeyEvent.DpadUp);
+        //if (Input.GetKeyUp(KeyCode.UpArrow) || Input.GetKeyUp(KeyCode.W)) OnKey(InputType.KeyUp, KeyEvent.DpadUp);
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) OnKey(InputType.KeyHold, KeyEvent.DpadUp);
 
-        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) OnKey(InputType.KeyDown, KeyEvent.DpadDown);
-        if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.S)) OnKey(InputType.KeyUp, KeyEvent.DpadDown);
+        //if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) OnKey(InputType.KeyDown, KeyEvent.DpadDown);
+        //if (Input.GetKeyUp(KeyCode.DownArrow) || Input.GetKeyUp(KeyCode.S)) OnKey(InputType.KeyUp, KeyEvent.DpadDown);
+        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) OnKey(InputType.KeyHold, KeyEvent.DpadDown);
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) OnKey(InputType.KeyDown, KeyEvent.DpadLeft);
-        if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A)) OnKey(InputType.KeyUp, KeyEvent.DpadLeft);
+        //if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) OnKey(InputType.KeyDown, KeyEvent.DpadLeft);
+        //if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.A)) OnKey(InputType.KeyUp, KeyEvent.DpadLeft);
+        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) OnKey(InputType.KeyHold, KeyEvent.DpadLeft);
 
-        if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) OnKey(InputType.KeyDown, KeyEvent.DpadRight);
-        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D)) OnKey(InputType.KeyUp, KeyEvent.DpadRight);
+        //if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) OnKey(InputType.KeyDown, KeyEvent.DpadRight);
+        //if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.D)) OnKey(InputType.KeyUp, KeyEvent.DpadRight);
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) OnKey(InputType.KeyHold, KeyEvent.DpadRight);
 
         if (Input.GetKeyDown(KeyCode.Return)) OnKey(InputType.KeyDown, KeyEvent.ButtonA);
         if (Input.GetKeyUp(KeyCode.Return)) OnKey(InputType.KeyUp, KeyEvent.ButtonA);
