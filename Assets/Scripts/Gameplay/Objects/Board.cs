@@ -50,7 +50,7 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         GameInput.RegisterTouchEvent(GameInput.InputType.TouchMove, OnTouchMove);
         GameInput.RegisterTouchEvent(GameInput.InputType.TouchUp, OnTouchUp);
 
-        GameInput.RegisterKeyEvent(GameInput.InputType.KeyPress, OnKeyDown);
+        GameInput.RegisterKeyEvent(GameInput.InputType.KeyDown, OnKeyDown);
 
         EventDispatcher.AddListener<GameCommandEvent>(this);
     }
@@ -61,7 +61,8 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         GameInput.UnRegisterTouchEvent(GameInput.InputType.TouchMove, OnTouchMove);
         GameInput.UnRegisterTouchEvent(GameInput.InputType.TouchUp, OnTouchUp);
 
-        GameInput.UnRegisterKeyEvent(GameInput.InputType.KeyPress, OnKeyDown);
+        GameInput.UnRegisterKeyEvent(GameInput.InputType.KeyDown, OnKeyDown);
+        GameInput.UnRegisterKeyEvent(GameInput.InputType.KeyUp, OnKeyUp);
 
         EventDispatcher.RemoveListener<GameCommandEvent>(this);
     }
@@ -88,6 +89,11 @@ public class Board : MonoBehaviour, IEvent<GameCommandEvent>
         }
 
         mCells[mPointerIndex.x, mPointerIndex.y].OnHover(true);
+    }
+
+    private void OnKeyUp(GameInput.KeyEvent keyEvent)
+    {
+
     }
 
     protected void MovePointer(int offsetx, int offsety)
