@@ -64,7 +64,11 @@
     <Compile Include="Assets\Scripts\Audio\SoundData.cs" />
     <Compile Include="Assets\Scripts\Audio\SoundManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Algorithm.cs" />
-    <Compile Include="Assets\Scripts\Gameplay\ICommand.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Commands\AddCommand.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Commands\CommandProcessor.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Commands\ICommand.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Commands\MoveCommand.cs" />
+    <Compile Include="Assets\Scripts\Gameplay\Commands\RemoveCommand.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\DataManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\Gameplay\Managers\HUDManager.cs" />
